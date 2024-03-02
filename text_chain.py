@@ -8,6 +8,7 @@ import shutil
 #path to the data
 DATA_PATH = 'data'
 CHROMA_PATH = 'chroma'
+EMBEDDING_MODEL = "intfloat/e5-large-v2"
 
 def main():
     documents = load_docs()
@@ -26,7 +27,7 @@ def split_pages(documents):
         chunk_size=100, chunk_overlap=25, length_function=len
     )
     chunks = text_splitter.split(documents)
-    
+
     return chunks
 
 #save files to database

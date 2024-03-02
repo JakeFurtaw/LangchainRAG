@@ -1,7 +1,7 @@
-from langchain_community.document_loaders import TextLoader
+from langchain_community.document_loaders import DirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.vectorstores.chroma import Chroma
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 import os
 import shutil
 
@@ -17,17 +17,17 @@ def main():
 
 #load the .txt files
 def load_docs():
-    loader = TextLoader(DATA_PATH)
+    loader = DirectoryLoader(DATA_PATH)
     documents = loader.load()
-    return documents()
+    doc_text = [doc.page_content for doc in documents]
+    return doc_text
 
 #split the documents into chunks of text
-def split_pages(documents):
+def split_pages(doc_text):
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=100, chunk_overlap=25, length_function=len
+        chunk_size=100, chunk_overlap=25, length_function=len,
     )
-    chunks = text_splitter.split(documents)
-
+    chunks = text_splitter.create_documents(doc_text)
     return chunks
 
 #save files to database
@@ -39,6 +39,7 @@ def save_to_db(chunks):
     db= Chroma.from_documents(
         chunks, HuggingFaceEmbeddings(), persist_directory=CHROMA_PATH
     )
+    print(chunks[47:50])
     db.persist()
 
 if __name__ == '__main__':

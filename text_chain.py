@@ -25,7 +25,7 @@ def load_docs():
 #split the documents into chunks of text
 def split_pages(doc_text):
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=100, chunk_overlap=25, length_function=len,
+        chunk_size=200, chunk_overlap=25, length_function=len,
     )
     chunks = text_splitter.create_documents(doc_text)
     return chunks

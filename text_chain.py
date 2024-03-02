@@ -1,11 +1,18 @@
 from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_chroma import Chroma
-from langchain_embeddings import OpenAIEmbeddings
+from langchain.vectorstores.chroma import Chroma
+from langchain.embeddings import HuggingFaceEmbeddings
+import os
+import shutil
 
 #path to the data
 DATA_PATH = 'data'
 CHROMA_PATH = 'chroma'
+
+def main():
+    documents = load_docs()
+    chunks = split_pages(documents)
+    save_to_db(chunks)
 
 #load the .txt files
 def load_docs():
@@ -19,10 +26,19 @@ def split_pages(documents):
         chunk_size=100, chunk_overlap=25, length_function=len
     )
     chunks = text_splitter.split(documents)
+    
     return chunks
+
 #save files to database
 def save_to_db(chunks):
-
+    #clear db if it exists
+    if os.path.exists(CHROMA_PATH):
+        shutil.rmtree(CHROMA_PATH)
+    #create new db from current docs
     db= Chroma.from_documents(
-        chunks, OpenAIEmbeddings(), persist_directory=CHROMA_PATH
+        chunks, HuggingFaceEmbeddings(), persist_directory=CHROMA_PATH
     )
+    db.persist()
+
+if __name__ == '__main__':
+    main()

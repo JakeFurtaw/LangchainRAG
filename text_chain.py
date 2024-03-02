@@ -39,7 +39,7 @@ def save_to_db(chunks):
     db= Chroma.from_documents(
         chunks, HuggingFaceEmbeddings(), persist_directory=CHROMA_PATH
     )
-    #print(chunks[47:50])
+    #print(chunks[10:13])
     db.persist()
 
 if __name__ == '__main__':

@@ -5,7 +5,6 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 import os
 import shutil
 
-#path to the data
 DATA_PATH = 'data'
 CHROMA_PATH = 'chroma'
 EMBEDDING_MODEL = "intfloat/e5-large-v2"
@@ -41,6 +40,8 @@ def save_to_db(chunks):
     )
     #print(chunks[10:13])
     db.persist()
+
+    #print(f"Saved {len(chunks)} chunks to {CHROMA_PATH}.")
 
 if __name__ == '__main__':
     main()

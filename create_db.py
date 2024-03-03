@@ -1,6 +1,7 @@
 """
 This script is used to create a database of text chunks from the .txt files in the data folder.
-It uses the langchain library to create a database of text chunks and save them to a Chroma database.
+It uses the langchain library to load douments, split text, embed the text, and save the text to a Chroma database.
+Then it createa a database of text chunks and saves them to a Chroma database.
 """
 from langchain_community.document_loaders import DirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter

@@ -15,7 +15,6 @@ MIXTRAL_CHAT_TEMPLATE = (
     "You are programmed to be helpful, friendly, and informative. "
     "<</SYS>>"
     "[/INST]{answer_str} </s>"
-
     "<s>[INST] {question_str} <</INST>>"
 )
 

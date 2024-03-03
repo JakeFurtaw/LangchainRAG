@@ -1,3 +1,7 @@
+"""
+This script is used to create a database of text chunks from the .txt files in the data folder.
+It uses the langchain library to create a database of text chunks and save them to a Chroma database.
+"""
 from langchain_community.document_loaders import DirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.vectorstores.chroma import Chroma
@@ -24,7 +28,9 @@ def load_docs():
 #split the documents into chunks of text
 def split_pages(doc_text):
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=200, chunk_overlap=25, length_function=len,
+        chunk_size=200, 
+        chunk_overlap=25, 
+        length_function=len,
     )
     chunks = text_splitter.create_documents(doc_text)
     return chunks

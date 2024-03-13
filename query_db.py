@@ -1,13 +1,14 @@
 """
 This script is used to query the database of text chunks created in create_db.py.
-It uses the langchain library to load the database, query the database, and return the most similar text chunks.
+It uses the langchain library to load the model and tokenizer. 
+Then the script queries the database and returns the result or results depending on the k #.
 """
-import argparse
 from langchain.vectorstores.chroma import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from huggingface_hub import login
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import os
+import sys
 
 #load the huggingface api token
 HUGGINGFACE_API_TOKEN = os.getenv("HUGGINGFACE_API_TOKEN")
@@ -34,13 +35,19 @@ def main():
     db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
 
     #query the database
-    query = "What is Jal Irani Room Number?"
+    if len(sys.argv) > 2:
+        print("What can I help you with today: ")
+        sys.exit(1)
+    #get the query
+    query = ' '.join(sys.argv[1:])
+
+    #query the db for the most similar results
     results = db.similarity_search_with_relevance_scores(query, k=2)
     if len (results) == 0:
         print("No results found.")
         return
     
-    #printing query
+    #printing query(Testing purposes only)
     print ("\nQuery: " + query)
 
     #print the results

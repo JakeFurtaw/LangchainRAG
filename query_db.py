@@ -15,8 +15,8 @@ HUGGINGFACE_API_TOKEN = os.getenv("HUGGINGFACE_API_TOKEN")
 login(token = HUGGINGFACE_API_TOKEN)
 
 #load the llama model and tokenizer
-tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf")
-model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-2-7b-chat-hf")
+tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token = HUGGINGFACE_API_TOKEN)
+model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token = HUGGINGFACE_API_TOKEN)
 
 CHROMA_PATH = 'chroma'
 #chat template to get better results from llama model
@@ -28,33 +28,30 @@ LLAMA_CHAT_TEMPLATE = (
     "<</SYS>>"
     "[/INST] {context_str} </s><s>[INST] {query_str} [/INST]"
 )
-
 def main():
     #load the database
     embedding_function = HuggingFaceEmbeddings()
     db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
-
     #query the database
-    if len(sys.argv) > 2:
-        print("What can I help you with today: ")
-        sys.exit(1)
-    #get the query
-    query = ' '.join(sys.argv[1:])
+    if len(sys.argv) > 1:
+        #get the query
+        query=' '.join(sys.argv[1:])
+        #query the db for the most similar results
+        results = db.similarity_search_with_relevance_scores(query, k=2)
+        if len (results) == 0:
+            print("No results found.")
+            return
+        else:
+            #printing query(Testing purposes only)
+            print("-------------------------------------------------------")
+            print (f"\nQuery: " + query)
+            #print the results
+            print("\nResults:")
+            for result in results:
+                print(result)     
+    else:
+        print("Please provide a query.")
 
-    #query the db for the most similar results
-    results = db.similarity_search_with_relevance_scores(query, k=2)
-    if len (results) == 0:
-        print("No results found.")
-        return
-    
-    #printing query(Testing purposes only)
-    print ("\nQuery: " + query)
-
-    #print the results
-    print("\nResults:")
-    for result in results:
-        print(result)
-       
 if __name__ == '__main__':
     main()
 

@@ -40,6 +40,7 @@ def print_results(results):
         return
 
     print("\nResults:")
+    print('-' * 80)
     for result in results:
         document, score = result
         content = document.page_content.strip()

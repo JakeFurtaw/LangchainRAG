@@ -29,7 +29,7 @@ def load_docs():
 #split the documents into chunks of text
 def split_pages(doc_text):
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=100, 
+        chunk_size=250, 
         chunk_overlap=15, 
         length_function=len,
     )
@@ -45,10 +45,7 @@ def save_to_db(chunks):
     db= Chroma.from_documents(
         chunks, HuggingFaceEmbeddings(), persist_directory=CHROMA_PATH
     )
-    #print(chunks[10:13])
     db.persist()
-
-    #print(f"Saved {len(chunks)} chunks to {CHROMA_PATH}.")
 
 if __name__ == '__main__':
     main()

@@ -61,7 +61,7 @@ def main():
         # Query the db for the most similar results
         results = db.similarity_search_with_relevance_scores(query, k=2)
         # Print the results
-        print("-------------------------------------------------------")
+        print('-' * 80)
         print(f"\nQuery: {query}")
         print_results(results)
     else:

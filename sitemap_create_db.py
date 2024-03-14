@@ -9,23 +9,19 @@ from langchain.vectorstores.chroma import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 import os
 import shutil
-
 SITEMAP_URL = 'https://www.towson.edu/sitemap.xml'
 CHROMA_PATH = 'chroma'
 EMBEDDING_MODEL = "intfloat/e5-large-v2"
-
 def main():
     documents = load_docs()
     chunks = split_pages(documents)
     save_to_db(chunks)
-
 # Load the documents from the sitemap.xml file
 def load_docs():
     loader = SitemapLoader(SITEMAP_URL)
     documents = loader.load()
     doc_text = [doc.page_content for doc in documents]
     return doc_text
-
 # Split the documents into chunks of text
 def split_pages(doc_text):
     text_splitter = RecursiveCharacterTextSplitter(
@@ -35,7 +31,6 @@ def split_pages(doc_text):
     )
     chunks = text_splitter.create_documents(doc_text)
     return chunks
-
 # Save files to the database
 def save_to_db(chunks):
     # Clear the database if it exists

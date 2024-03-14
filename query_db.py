@@ -19,7 +19,7 @@ login(token=HUGGINGFACE_API_TOKEN)
 tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token=HUGGINGFACE_API_TOKEN)
 model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token=HUGGINGFACE_API_TOKEN)
 CHROMA_PATH = 'chroma'
-# Chat template to get better results from LLaMA model
+# Chat template to get better results from LLama model
 LLAMA_CHAT_TEMPLATE = (
     "<s>[INST] <<SYS>>"
     "You are a helpful, respectful and honest AI assistant to help college students navigate a college campus."

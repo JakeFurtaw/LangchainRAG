@@ -5,6 +5,6 @@ This chatbat will be live on a website and app so that students can query it and
 
 ## Whats Being Used
 I am using Llama 2, Langchain, as well as a multitude of other python modules to create the perfect chatbot to cater to students at local universities.
-Refer to the [requirements.txt] for a full list of requirements used in this project.
+Refer to the [Requirements File](requirements.txt) for a full list of requirements used in this project.
 
 

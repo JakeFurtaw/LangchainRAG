@@ -3,7 +3,6 @@ This script is used to query the database of text chunks created in create_db.py
 It uses the langchain library to load the model and tokenizer.
 Then the script queries the database and returns the result or results depending on the k #.
 """
-
 from langchain.vectorstores.chroma import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from huggingface_hub import login

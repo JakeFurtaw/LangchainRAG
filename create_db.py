@@ -25,8 +25,8 @@ def load_docs():
 #split the documents into chunks of text
 def split_pages(doc_text):
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=250, 
-        chunk_overlap=15, 
+        chunk_size=200, 
+        chunk_overlap=10, 
         length_function=len,
     )
     chunks = text_splitter.create_documents(doc_text)
@@ -41,6 +41,5 @@ def save_to_db(chunks):
         chunks, HuggingFaceEmbeddings(), persist_directory=CHROMA_PATH
     )
     db.persist()
-
 if __name__ == '__main__':
     main()

@@ -11,15 +11,15 @@ from textwrap import wrap
 import os
 import sys
 from dotenv import load_dotenv
-# Load the Hugging Face API token
+# Load your Hugging Face API token
 load_dotenv()
-HUGGINGFACE_API_TOKEN = os.getenv("HUGGINGFACE_API_TOKEN")
+HUGGINGFACE_API_TOKEN = os.environ("HUGGINGFACE_API_TOKEN")
 login(token=HUGGINGFACE_API_TOKEN)
-# Load the LLaMA model and tokenizer
+# Load the LLama2 model and tokenizer
 tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token=HUGGINGFACE_API_TOKEN)
 model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token=HUGGINGFACE_API_TOKEN)
 CHROMA_PATH = 'chroma'
-# Chat template to get better results from LLama model
+# Chat template to get better results from LLama2 model
 LLAMA_CHAT_TEMPLATE = (
     "<s>[INST] <<SYS>>"
     "You are a helpful, respectful and honest AI assistant to help college students navigate a college campus."
@@ -28,6 +28,7 @@ LLAMA_CHAT_TEMPLATE = (
     "<</SYS>>"
     "[/INST] {context_str} </s><s>[INST] {query_str} [/INST]"
 )
+#Printing Results to the CLI
 def print_results(results):
     if not results:
         print("No results found.")
@@ -49,9 +50,8 @@ def print_results(results):
         print('\n'.join(wrapped_lines))
         print(f"Relevance Score: {score:.4f}")
         print('-' * 80)
-
 def main():
-    # Load the database
+    # Load the database and the embedding function
     embedding_function = HuggingFaceEmbeddings()
     db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
     # Query the database
@@ -66,6 +66,5 @@ def main():
         print_results(results)
     else:
         print("Please provide a query.")
-
 if __name__ == '__main__':
     main()

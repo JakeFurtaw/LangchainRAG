@@ -2,6 +2,7 @@
 This script is used to query the database of text chunks created in create_db.py.
 It uses the langchain library to load the model and tokenizer.
 Then the script queries the database and returns the result or results depending on the k #.
+MAKE SURE TO REIGNORE THE .env FILE AFTER USE
 """
 from langchain.vectorstores.chroma import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
@@ -11,13 +12,14 @@ from textwrap import wrap
 import os
 import sys
 from dotenv import load_dotenv
+from pathlib import Path
 # Load your Hugging Face API token
-load_dotenv()
-HUGGINGFACE_API_TOKEN = os.environ("HUGGINGFACE_API_TOKEN")
-login(token=HUGGINGFACE_API_TOKEN)
+load_dotenv(Path(".env"))
+HF_API_KEY = os.getenv("HUGGINGFACE_API_TOKEN")
+# login(token=HUGGINGFACE_API_TOKEN)
 # Load the LLama2 model and tokenizer
-tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token=HUGGINGFACE_API_TOKEN)
-model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token=HUGGINGFACE_API_TOKEN)
+tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token=HF_API_KEY)
+model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token=HF_API_KEY)
 CHROMA_PATH = 'chroma'
 # Chat template to get better results from LLama2 model
 LLAMA_CHAT_TEMPLATE = (
@@ -59,7 +61,7 @@ def main():
         # Get the query
         query = ' '.join(sys.argv[1:])
         # Query the db for the most similar results
-        results = db.similarity_search_with_relevance_scores(query, k=2)
+        results = db.similarity_search_with_relevance_scores(query, k=3)
         # Print the results
         print('-' * 80)
         print(f"\nQuery: {query}")

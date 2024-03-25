@@ -1,7 +1,9 @@
 langchain
 langchain-community
+huggingface-hub
 chromadb
 unstructured
+transformers
 sentence-transformers
 dotenv
 textwrap

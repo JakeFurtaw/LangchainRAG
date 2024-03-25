@@ -13,10 +13,10 @@ import os
 import sys
 from dotenv import load_dotenv
 from pathlib import Path
+
 # Load your Hugging Face API token
 load_dotenv(Path(".env"))
 HF_API_KEY = os.getenv("HUGGINGFACE_API_TOKEN")
-# login(token=HUGGINGFACE_API_TOKEN)
 # Load the LLama2 model and tokenizer
 tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token=HF_API_KEY)
 model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token=HF_API_KEY)

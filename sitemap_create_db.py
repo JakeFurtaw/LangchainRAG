@@ -20,7 +20,7 @@ def main():
 # Load the documents from the sitemap.xml file
 def load_docs():
     loader = SitemapLoader(SITEMAP_URL, continue_on_failure=True)
-    documents = loader.load()#Getting an error here, Cant decode PDF's. Need to figure out a work around.
+    documents = loader.load()
     doc_text = [doc.page_content for doc in documents]
     return doc_text
 # Split the documents into chunks of text

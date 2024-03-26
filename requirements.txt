@@ -7,3 +7,4 @@ transformers
 sentence-transformers
 dotenv
 textwrap
+nemo-toolkit

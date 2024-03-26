@@ -1,8 +1,10 @@
 from langchain.vectorstores import Chroma
 import re
 
+CHROMA_PATH = 'chroma'
+
 # Load the Chroma database
-chroma_db = Chroma(persist_directory='path/to/chroma/db')
+chroma_db = Chroma(persist_directory= CHROMA_PATH)
 
 # Define the pattern to remove
 pattern = r'[\x80-\xff]|�|[� -�]'

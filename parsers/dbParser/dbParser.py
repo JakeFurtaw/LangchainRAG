@@ -2,6 +2,7 @@ from langchain.vectorstores import Chroma
 import re
 
 CHROMA_PATH = 'chroma'
+CLEANED_DB_PATH = 'cleaned_chroma'
 
 # Load the Chroma database
 chroma_db = Chroma(persist_directory= CHROMA_PATH)
@@ -17,5 +18,5 @@ for doc in chroma_db.as_retriever():
     updated_docs.append(updated_doc)
 
 # Create a new Chroma database with the cleaned documents
-new_chroma_db = Chroma.from_documents(updated_docs, chroma_db.embedding_function, persist_directory='path/to/new/chroma/db')
+new_chroma_db = Chroma.from_documents(updated_docs, chroma_db.embedding_function, persist_directory='CLEANED_DB_PATH')
 new_chroma_db.persist()

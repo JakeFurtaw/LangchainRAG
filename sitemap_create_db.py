@@ -32,7 +32,7 @@ def load_docs():
     pattern = r'[ -~]+'
     doc_list = []
     for doc in doc_text:
-        matches = re.findall(doc)
+        matches = re.findall(pattern, doc)
         new_doc = ''.join(matches)
         doc_list.append(new_doc)
     return doc_text

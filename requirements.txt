@@ -5,6 +5,5 @@ chromadb
 unstructured
 transformers
 sentence-transformers
-dotenv
-textwrap
+python-dotenv
 nemo-toolkit

@@ -12,12 +12,13 @@ chroma_db = Chroma(persist_directory=CHROMA_PATH)
 # Define the pattern
 pattern = r'[^a-zA-Z0-9\s\n]'
 
-# Iterate through the documents and remove everything expect the pattern
+# Iterate through the documents and remove everything except the pattern
 updated_docs = []
 for doc_tuple in chroma_db.as_retriever():
     doc_content, doc_score = doc_tuple
-    cleaned_content = ''.join(re.findall(pattern, doc_content, flags=re.UNICODE))
-    metadata = {'score': str(doc_score)}  # Convert score to string
+    cleaned_content = re.sub(pattern, '', doc_content, flags=re.UNICODE)
+    metadata = {'score': str(doc_score)}
+    # Convert score to string
     updated_doc = Document(page_content=cleaned_content, metadata=metadata)
     updated_docs.append(updated_doc)
 

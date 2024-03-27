@@ -8,7 +8,6 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.vectorstores.chroma import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 import os
-import re
 import shutil
 
 SITEMAP_URL = 'https://www.towson.edu/sitemap.xml'
@@ -23,20 +22,7 @@ def load_docs():
     loader = SitemapLoader(SITEMAP_URL, continue_on_failure=True)
     documents = loader.load()
     doc_text = [doc.page_content for doc in documents]
-    """
-    I have no idea if it will work off rip. Don't know what the datatypes are, I'm guessing doc_text is a list of strings.
-    I would suggest going through this on the debugger. Try creating a small sitemap too, maybe local? pull a few html pages, not sure.
-    Waiting for the whole sitemap to be processed will make it take forever to do this correctly. Maybe look online for example sitemaps that
-    are small
-    """
-    pattern = r'[ -~]+'
-    doc_list = []
-    for doc in doc_text:
-        matches = re.findall(pattern, doc)
-        new_doc = ''.join(matches)
-        doc_list.append(new_doc)
     return doc_text
-
 # Split the documents into chunks of text
 def split_pages(doc_text):
     text_splitter = RecursiveCharacterTextSplitter(

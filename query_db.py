@@ -29,6 +29,7 @@ LLAMA_CHAT_TEMPLATE = (
     "<</SYS>>"
     "[/INST] {context_str} </s><s>[INST] {query_str} [/INST]"
 )
+
 #Printing Results to the CLI
 def print_results(results):
     if not results:
@@ -51,6 +52,8 @@ def print_results(results):
         print('\n'.join(wrapped_lines))
         print(f"Relevance Score: {score:.4f}")
         print('-' * 80)
+
+#Main Function
 def main():
     # Load the database and the embedding function
     embedding_function = HuggingFaceEmbeddings()

@@ -6,7 +6,6 @@ MAKE SURE TO REIGNORE THE .env FILE AFTER USE
 """
 from langchain.vectorstores.chroma import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from huggingface_hub import login
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from textwrap import wrap
 import os

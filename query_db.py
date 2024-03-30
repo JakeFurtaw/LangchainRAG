@@ -17,8 +17,8 @@ from pathlib import Path
 load_dotenv(Path(".env"))
 HF_API_KEY = os.getenv("HUGGINGFACE_API_TOKEN")
 # Load the LLama2 model and tokenizer
-tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token=HF_API_KEY)
-model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token=HF_API_KEY)
+tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-13b-chat-hf", token=HF_API_KEY)
+model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-2-13b-chat-hf", token=HF_API_KEY)
 CHROMA_PATH = 'chroma'
 # Chat template to get better results from LLama2 model
 LLAMA_CHAT_TEMPLATE = (

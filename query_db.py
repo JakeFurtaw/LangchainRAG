@@ -21,7 +21,6 @@ HF_API_KEY = os.getenv("HUGGINGFACE_API_TOKEN")
 tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-13b-chat-hf", token=HF_API_KEY)
 model = LlamaForCausalLM.from_pretrained("meta-llama/Llama-2-13b-chat-hf", token=HF_API_KEY)
 model.to(device)
-tokenizer.to(device)
 # Path to the Chroma database
 CHROMA_PATH = 'chroma'
 # Chat template to get better results from LLama2 model

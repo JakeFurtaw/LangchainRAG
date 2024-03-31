@@ -6,4 +6,4 @@ unstructured
 transformers
 sentence-transformers
 python-dotenv
-nemo-toolkit
+torch

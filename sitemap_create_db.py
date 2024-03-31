@@ -9,6 +9,7 @@ from langchain.vectorstores.chroma import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 import os
 import shutil
+import re
 
 SITEMAP_URL = 'https://www.towson.edu/sitemap.xml'
 CHROMA_PATH = 'chroma'
@@ -22,12 +23,19 @@ def load_docs():
     loader = SitemapLoader(SITEMAP_URL, continue_on_failure=True)
     documents = loader.load()
     doc_text = [doc.page_content for doc in documents]
-    return doc_text
+    docs = []
+    for doc in doc_text:
+        # Remove extra white space
+        cleaned_text = re.sub(r'[ \t]+', ' ', doc)
+        # Replace multiple newlines with a single newline
+        cleaned_text = re.sub(r'\n+', '\n', cleaned_text).strip()
+        docs.append(cleaned_text)
+    return docs
 # Split the documents into chunks of text
 def split_pages(doc_text):
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=250, 
-        chunk_overlap=15, 
+        chunk_size=1000,
+        chunk_overlap=50,
         length_function=len,
     )
     chunks = text_splitter.create_documents(doc_text)

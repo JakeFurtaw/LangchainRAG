@@ -16,30 +16,38 @@ import os
 import sys
 from dotenv import load_dotenv
 from pathlib import Path
+
 # Specify the GPU devices to use
 gpu_indices = [0, 1]
 devices = [torch.device(f"cuda:{i}") for i in gpu_indices]
-torch.cuda.empty_cache()
+
 # Set the device for the model
-model_device = devices[1]  # Set the first GPU as the primary device
+model_device = devices[0]  # Set the first GPU as the primary device
+
 # Check if multiple GPUs are available
 if len(devices) > 1:
     print(f"Using {len(devices)} GPUs: {', '.join(str(device) for device in devices)}")
 else:
     print(f"Using single GPU: {model_device}")
+
 # Load your Hugging Face API token
 load_dotenv(Path(".env"))
 HF_API_KEY = os.getenv("HUGGINGFACE_API_TOKEN")
+
 # Load the LLama2 model and tokenizer
 tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token=HF_API_KEY)
 model = LlamaForCausalLM.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token=HF_API_KEY)
+
 # Set up DataParallel if multiple GPUs are available
 if len(devices) > 1:
     model = nn.DataParallel(model, device_ids=gpu_indices)
+
 # Move the model to the primary device
 model.to(model_device)
+
 # Path to the Chroma database
 CHROMA_PATH = 'chroma'
+
 # Chat template to get better results from LLama2 model
 LLAMA_CHAT_TEMPLATE = (
     "<s>[INST] <<SYS>>"
@@ -49,6 +57,7 @@ LLAMA_CHAT_TEMPLATE = (
     "<</SYS>>"
     "[/INST] {context_str} </s><s>[INST] {query_str} [/INST]"
 )
+
 # Printing Results to the CLI
 def print_results(results):
     if not results:
@@ -74,11 +83,13 @@ def print_results(results):
         print('\n'.join(wrapped_lines))
         print(f"Relevance Score: {score:.4f}")
         print('-' * 80)
+
 # Main Function
 def main():
     # Load the database and the embedding function
     embedding_function = HuggingFaceEmbeddings()
     db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
+
     # Query the database
     if len(sys.argv) > 1:
         # Get the query
@@ -102,5 +113,6 @@ def main():
         print_results([(f"\n\n"+response_text, 1.0)])
     else:
         print("Please provide a query.")
+
 if __name__ == '__main__':
     main()

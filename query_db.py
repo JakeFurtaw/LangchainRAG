@@ -71,8 +71,8 @@ def main():
         response_text = tokenizer.decode(response[0], skip_special_tokens=True)
         # Print the results
         print('-' * 80)
-        print(f"\n\nQuery: {query}")
-        print_results([(f"\n\n"+response_text, 1.0)])
+        print(f"\nQuery: {query}")
+        print_results([(f"\n"+response_text, 1.0)])
     else:
         print("Please provide a query.")
 

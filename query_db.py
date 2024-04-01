@@ -13,7 +13,7 @@ from pathlib import Path
 # Check if CUDA is available and making script use GPU
 torch.cuda.is_available()
 device = torch.device("cuda")
-#print(f"Running on {device}")  Testing what device is being used
+print(f"Running on {device}")  #Testing what device is being used
 # Load your Hugging Face API token
 load_dotenv(Path(".env"))
 HF_API_KEY = os.getenv("HUGGINGFACE_API_TOKEN")
@@ -21,6 +21,7 @@ HF_API_KEY = os.getenv("HUGGINGFACE_API_TOKEN")
 tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-13b-chat-hf", token=HF_API_KEY)
 model = LlamaForCausalLM.from_pretrained("meta-llama/Llama-2-13b-chat-hf", token=HF_API_KEY)
 model.to(device)
+tokenizer.to(device)
 # Path to the Chroma database
 CHROMA_PATH = 'chroma'
 # Chat template to get better results from LLama2 model

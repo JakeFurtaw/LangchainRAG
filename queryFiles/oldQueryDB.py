@@ -15,6 +15,7 @@ from pathlib import Path
 
 #Making sure the device is set to the GPU
 device = torch.device("cuda")
+torch.cuda.empty_cache()
 #print(f"Running on {device}")  Testing what device is being used
 # Load your Hugging Face API token
 load_dotenv(Path(".env"))
@@ -40,15 +41,26 @@ def print_results(results):
         print("Sorry, I couldn't find any relevant information for your query.")
         return
 
-    for i, result in enumerate(results, start=1):
-        content = result[0]
-        score = result[1]
-        lines = [line.strip() for line in content.strip().split('\n') if line.strip()]
-        print(f"Result {i}:")
-        print("Content:")
-        for line in lines:
-            print(line)
-        print(f"Relevance Score: {score:.4f}\n")
+    print("\nResults:")
+    print('-' * 80)
+    for result in results:
+        if isinstance(result[0], str):
+            # If the result is a string, assume it's the response_text
+            response_text = result[0]
+            print(response_text)
+        else:
+            # If the result is a Document object, handle it as before
+            document = result[0]
+            score = result[1]
+            content = document.page_content.strip()
+            lines = content.split('\n')
+            lines = [line.strip() for line in lines if line.strip()]
+            wrapped_lines = []
+            for line in lines:
+                wrapped_lines.extend(wrap(line, width=80))
+            print('\n'.join(wrapped_lines))
+            print(f"Relevance Score: {score:.4f}")
+        print('-' * 80)
 # Main Function
 def main():
     # Load the database and the embedding function

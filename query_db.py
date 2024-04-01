@@ -10,22 +10,34 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, LlamaForCausalLM
 from langchain.prompts import ChatPromptTemplate
 from textwrap import wrap
 import torch
+import torch.nn as nn
+from torch.nn.parallel import DistributedDataParallel as DDP
 import os
 import sys
 from dotenv import load_dotenv
 from pathlib import Path
-
-#Making sure the device is set to the GPU
-device = torch.device("cuda")
-#print(f"Running on {device}")  Testing what device is being used
+# Specify the GPU devices to use
+gpu_indices = [0, 1]
+devices = [torch.device(f"cuda:{i}") for i in gpu_indices]
+torch.cuda.empty_cache()
+# Set the device for the model
+model_device = devices[1]  # Set the first GPU as the primary device
+# Check if multiple GPUs are available
+if len(devices) > 1:
+    print(f"Using {len(devices)} GPUs: {', '.join(str(device) for device in devices)}")
+else:
+    print(f"Using single GPU: {model_device}")
 # Load your Hugging Face API token
 load_dotenv(Path(".env"))
 HF_API_KEY = os.getenv("HUGGINGFACE_API_TOKEN")
 # Load the LLama2 model and tokenizer
 tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token=HF_API_KEY)
-model = model = LlamaForCausalLM.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token=HF_API_KEY)
-#Setting model to run on GPU
-model.to(device)
+model = LlamaForCausalLM.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token=HF_API_KEY)
+# Set up DataParallel if multiple GPUs are available
+if len(devices) > 1:
+    model = nn.DataParallel(model, device_ids=gpu_indices)
+# Move the model to the primary device
+model.to(model_device)
 # Path to the Chroma database
 CHROMA_PATH = 'chroma'
 # Chat template to get better results from LLama2 model
@@ -37,12 +49,11 @@ LLAMA_CHAT_TEMPLATE = (
     "<</SYS>>"
     "[/INST] {context_str} </s><s>[INST] {query_str} [/INST]"
 )
-#Printing Results to the CLI
+# Printing Results to the CLI
 def print_results(results):
     if not results:
         print("Sorry, I couldn't find any relevant information for your query.")
         return
-    
     print("\nResults:")
     print('-' * 80)
     for result in results:
@@ -63,8 +74,7 @@ def print_results(results):
         print('\n'.join(wrapped_lines))
         print(f"Relevance Score: {score:.4f}")
         print('-' * 80)
-
-#Main Function
+# Main Function
 def main():
     # Load the database and the embedding function
     embedding_function = HuggingFaceEmbeddings()
@@ -80,10 +90,9 @@ def main():
         for result in results:
             document, score = result
             docs.append(document.page_content.strip())
-
         prompt = LLAMA_CHAT_TEMPLATE.format(context_str=', \n\n'.join(docs), query_str=query)
         # Move the input tensors to the device
-        input_tensors = tokenizer(prompt, return_tensors="pt").to(device)
+        input_tensors = tokenizer(prompt, return_tensors="pt").to(model_device)
         # Generate the response from the LLama2 model
         response = model.generate(**input_tensors)
         response_text = tokenizer.decode(response[0], skip_special_tokens=True)

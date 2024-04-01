@@ -105,7 +105,7 @@ def main():
         # Move the input tensors to the device
         input_tensors = tokenizer(prompt, return_tensors="pt").to(model_device)
         # Generate the response from the LLama2 model
-        response = model.generate(**input_tensors)
+        response = model.module.generate(**input_tensors)
         response_text = tokenizer.decode(response[0], skip_special_tokens=True)
         # Print the results
         print('-' * 80)

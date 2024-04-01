@@ -17,35 +17,24 @@ import sys
 from dotenv import load_dotenv
 from pathlib import Path
 
-# Specify the GPU devices to use
-gpu_indices = [0, 1]
-devices = [torch.device(f"cuda:{i}") for i in gpu_indices if torch.cuda.is_available()]
+# Specify the GPU as device if available
+device = [torch.device(f"cuda") if torch.cuda.is_available() else torch.device("cpu")]
 torch.cuda.empty_cache()
-
-# Set the device for the model
-model_device = devices[1]  # Set the first GPU as the primary device
-tokenizer_device = devices[0]  # Set the second GPU as the tokenizer device
-
-# Check if multiple GPUs are available
-if len(devices) > 1:
-    print(f"Using {len(devices)} GPUs: {', '.join(str(device) for device in devices)}")
-else:
-    print(f"Using single GPU: {model_device}")
 
 # Load your Hugging Face API token
 load_dotenv(Path(".env"))
-HF_API_KEY = os.getenv("HUGGINGFACE_API_TOKEN")
+HUGGING_FACE_HUB_TOKEN = os.getenv("HUGGING_FACE_HUB_TOKEN")
 
 # Load the LLama2 model and tokenizer
-tokenizer = LlamaTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token=HF_API_KEY)
-model = LlamaForCausalLM.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token=HF_API_KEY)
-
-# Set up DataParallel if multiple GPUs are available
-if len(devices) > 1:
-    model = nn.DataParallel(model, device_ids=gpu_indices)
+tokenizer = LlamaTokenizer.from_pretrained("meta-llama/Llama-2-13b-chat-hf", 
+    load_in_8bit=True,
+    device_map="auto")
+model = LlamaForCausalLM.from_pretrained("meta-llama/Llama-2-13b-chat-hf", 
+    load_in_8bit=True,
+    device_map="auto")
 
 # Move the model to the primary device
-model.to(model_device)
+model.to(device)
 
 # Path to the Chroma database
 CHROMA_PATH = 'chroma'
@@ -105,7 +94,7 @@ def main():
             docs.append(document.page_content.strip())
         prompt = LLAMA_CHAT_TEMPLATE.format(context_str=', \n\n'.join(docs), query_str=query)
         # Move the input tensors to the device
-        input_tensors = tokenizer(prompt, return_tensors="pt").to(model_device)
+        input_tensors = tokenizer(prompt, return_tensors="pt").to(device)
         # Generate the response from the LLama2 model
         response = model.module.generate(**input_tensors)
         response_text = tokenizer.decode(response[0], skip_special_tokens=True)

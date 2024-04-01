@@ -4,7 +4,7 @@ Then the script queries the database and returns the result or results depending
 MAKE SURE TO REIGNORE THE .env FILE AFTER USE """
 from langchain.vectorstores.chroma import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from transformers import AutoTokenizer, LlamaForCausalLM
+from transformers import AutoModelForCausalLM,AutoTokenizer, LlamaForCausalLM
 from langchain.prompts import ChatPromptTemplate
 import torch
 from textwrap import wrap

@@ -6,7 +6,7 @@ MAKE SURE TO REIGNORE THE .env FILE AFTER USE
 """
 from langchain.vectorstores.chroma import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from transformers import AutoModelForCausalLM, AutoTokenizer, LlamaForCausalLM
+from transformers import LlamaForCausalLM, LlamaTokenizer
 from langchain.prompts import ChatPromptTemplate
 from textwrap import wrap
 import torch
@@ -20,9 +20,11 @@ from pathlib import Path
 # Specify the GPU devices to use
 gpu_indices = [0, 1]
 devices = [torch.device(f"cuda:{i}") for i in gpu_indices]
+torch.cuda.empty_cache()
 
 # Set the device for the model
-model_device = devices[0]  # Set the first GPU as the primary device
+model_device = devices[1]  # Set the first GPU as the primary device
+tokenizer_device = devices[0]  # Set the second GPU as the tokenizer device
 
 # Check if multiple GPUs are available
 if len(devices) > 1:
@@ -35,7 +37,7 @@ load_dotenv(Path(".env"))
 HF_API_KEY = os.getenv("HUGGINGFACE_API_TOKEN")
 
 # Load the LLama2 model and tokenizer
-tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token=HF_API_KEY)
+tokenizer = LlamaTokenizer.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token=HF_API_KEY)
 model = LlamaForCausalLM.from_pretrained("meta-llama/Llama-2-7b-chat-hf", token=HF_API_KEY)
 
 # Set up DataParallel if multiple GPUs are available

@@ -19,7 +19,7 @@ from pathlib import Path
 
 # Specify the GPU devices to use
 gpu_indices = [0, 1]
-devices = [torch.device(f"cuda:{i}") for i in gpu_indices]
+devices = [torch.device(f"cuda:{i}") for i in gpu_indices if torch.cuda.is_available()]
 torch.cuda.empty_cache()
 
 # Set the device for the model

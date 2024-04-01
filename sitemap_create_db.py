@@ -10,14 +10,20 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 import os
 import shutil
 import re
+import torch
 
 SITEMAP_URL = 'https://www.towson.edu/sitemap.xml'
 CHROMA_PATH = 'chroma'
 EMBEDDING_MODEL = "intfloat/e5-large-v2"
+
+# Set device to cuda if available
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 def main():
     documents = load_docs()
     chunks = split_pages(documents)
     save_to_db(chunks)
+
 # Load the documents from the sitemap.xml file
 def load_docs():
     loader = SitemapLoader(SITEMAP_URL, continue_on_failure=True)
@@ -45,9 +51,13 @@ def save_to_db(chunks):
     # Clear the database if it exists
     if os.path.exists(CHROMA_PATH):
         shutil.rmtree(CHROMA_PATH)
+    
+    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
+    embeddings.embedding_model.to(device)
+
     # Create a new database from the current documents
     db = Chroma.from_documents(
-        chunks, HuggingFaceEmbeddings(), persist_directory=CHROMA_PATH
+        chunks, embeddings, persist_directory=CHROMA_PATH
     )
     db.persist()
 

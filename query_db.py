@@ -28,7 +28,7 @@ tokenizer = LlamaTokenizer.from_pretrained("meta-llama/Llama-2-13b-chat-hf",
 model = LlamaForCausalLM.from_pretrained("meta-llama/Llama-2-13b-chat-hf", 
     load_in_8bit=True,#Trying to implement quantization
     device_map="auto")
-# Move the model to the primary device
+# Move the model and tokenizer to the primary device
 model,tokenizer.to(device)
 # Path to the Chroma database
 CHROMA_PATH = 'chroma'

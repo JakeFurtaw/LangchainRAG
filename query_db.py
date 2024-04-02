@@ -27,10 +27,10 @@ HUGGING_FACE_HUB_TOKEN = os.getenv("HUGGING_FACE_HUB_TOKEN")
 
 # Load the LLama2 model and tokenizer
 tokenizer = LlamaTokenizer.from_pretrained("meta-llama/Llama-2-13b-chat-hf", 
-    load_in_8bit=True,
+    load_in_8bit=True,#Trying to impliment quantization
     device_map="auto")
 model = LlamaForCausalLM.from_pretrained("meta-llama/Llama-2-13b-chat-hf", 
-    load_in_8bit=True,
+    load_in_8bit=True,#Trying to impliment quantization
     device_map="auto")
 
 # Move the model to the primary device

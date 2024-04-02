@@ -29,7 +29,7 @@ model = LlamaForCausalLM.from_pretrained("meta-llama/Llama-2-13b-chat-hf",
     load_in_8bit=True,#Trying to implement quantization
     device_map="auto")
 # Move the model to the primary device
-model.to(device)
+model,tokenizer.to(device)
 # Path to the Chroma database
 CHROMA_PATH = 'chroma'
 # Chat template to get better results from LLama2 model

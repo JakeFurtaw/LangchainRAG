@@ -18,25 +18,20 @@ from pathlib import Path
 
 # Specify the GPU as device if available
 device = [torch.device(f"cuda") if torch.cuda.is_available() else torch.device("cpu")]
-
 # Load your Hugging Face API token
 load_dotenv(Path(".env"))
 HUGGING_FACE_HUB_TOKEN = os.getenv("HUGGING_FACE_HUB_TOKEN")
-
 # Load the LLama2 model and tokenizer
 tokenizer = LlamaTokenizer.from_pretrained("meta-llama/Llama-2-13b-chat-hf", 
-    load_in_8bit=True,#Trying to impliment quantization
+    load_in_8bit=True,#Trying to implement quantization
     device_map="auto")
 model = LlamaForCausalLM.from_pretrained("meta-llama/Llama-2-13b-chat-hf", 
-    load_in_8bit=True,#Trying to impliment quantization
+    load_in_8bit=True,#Trying to implement quantization
     device_map="auto")
-
 # Move the model to the primary device
 model.to(device)
-
 # Path to the Chroma database
 CHROMA_PATH = 'chroma'
-
 # Chat template to get better results from LLama2 model
 LLAMA_CHAT_TEMPLATE = (
     "<s>[INST] <<SYS>>"
@@ -78,7 +73,6 @@ def main():
     # Load the database and the embedding function
     embedding_function = HuggingFaceEmbeddings()
     db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
-
     # Query the database
     if len(sys.argv) > 1:
         # Get the query

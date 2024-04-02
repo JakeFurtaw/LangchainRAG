@@ -81,18 +81,19 @@ def main():
         query = ' '.join(sys.argv[1:])
         # Query the db for the most similar results
         results = db.similarity_search_with_relevance_scores(query, k=5)
-        # Get the chat prompt template
+        # Get the context for the chat prompt
         docs = []
         for result in results:
             document, score = result
             docs.append(document.page_content.strip())
+        # Create the chat prompt
         prompt = LLAMA_CHAT_TEMPLATE.format(context_str=', \n\n'.join(docs), query_str='\n\n'+query)
         # Move the input tensors to the device
         input_tensors = tokenizer(prompt, return_tensors="pt").to(device)
         # Generate the response from the LLama2 model
         response = model.module.generate(**input_tensors)
         response_text = tokenizer.decode(response[0], skip_special_tokens=True)
-        # Print the results
+        # Print the results and query
         print('-' * 80)
         print(f"Query: {query}")
         print_results([(f"\n"+response_text, 1.0)])

@@ -18,7 +18,6 @@ from pathlib import Path
 
 # Specify the GPU as device if available
 device = [torch.device(f"cuda") if torch.cuda.is_available() else torch.device("cpu")]
-torch.cuda.empty_cache()
 
 # Load your Hugging Face API token
 load_dotenv(Path(".env"))
@@ -85,7 +84,7 @@ def main():
         # Get the query
         query = ' '.join(sys.argv[1:])
         # Query the db for the most similar results
-        results = db.similarity_search_with_relevance_scores(query, k=3)
+        results = db.similarity_search_with_relevance_scores(query, k=5)
         # Get the chat prompt template
         docs = []
         for result in results:

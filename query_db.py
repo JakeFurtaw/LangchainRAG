@@ -36,8 +36,10 @@ CHROMA_PATH = 'chroma'
 LLAMA_CHAT_TEMPLATE = (
     "<s>[INST] <<SYS>>"
     "You are an AI Assistant that helps college students navigate a college campus."
-    "You provide information like teacher contact information, office room numbers, class schedules, and general campus information."
+    "You provide information like teacher contact information, teachers office room numbers, course information, enrollment information, campus resources," 
+    "and general campus information."
     "Please ensure that your responses are clear, concise, and positive in nature."
+    "If you dont know the answer to a question, you can say that you are not sure."
     "<</SYS>>"
     "[/INST] {context_str} </s><s>[INST] {query_str} [/INST]"
 )

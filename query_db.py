@@ -91,7 +91,7 @@ def main():
         for result in results:
             document, score = result
             docs.append(document.page_content.strip())
-        prompt = LLAMA_CHAT_TEMPLATE.format(context_str=', \n\n'.join(docs), query_str=query)
+        prompt = LLAMA_CHAT_TEMPLATE.format(context_str=', \n\n'.join(docs), query_str='\n\n'+query)
         # Move the input tensors to the device
         input_tensors = tokenizer(prompt, return_tensors="pt").to(device)
         # Generate the response from the LLama2 model

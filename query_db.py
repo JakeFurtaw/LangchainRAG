@@ -7,7 +7,6 @@ MAKE SURE TO REIGNORE THE .env FILE AFTER USE
 from langchain.vectorstores.chroma import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from transformers import LlamaForCausalLM, LlamaTokenizer
-from langchain.prompts import ChatPromptTemplate
 from textwrap import wrap
 import torch
 import torch.nn as nn
@@ -71,7 +70,7 @@ def print_results(results):
         for line in lines:
             wrapped_lines.extend(wrap(line, width=80))
         # Print the wrapped lines with a blank line between each result
-        print('\n'.join(wrapped_lines))
+        print('\n\n'.join(wrapped_lines))
         print(f"Relevance Score: {score:.4f}")
         print('-' * 80)
 
@@ -100,8 +99,8 @@ def main():
         response_text = tokenizer.decode(response[0], skip_special_tokens=True)
         # Print the results
         print('-' * 80)
-        print(f"\nQuery: {query}")
-        print_results([(f"\n\n"+response_text, 1.0)])
+        print(f"Query: {query}")
+        print_results([(f"\n"+response_text, 1.0)])
     else:
         print("Please provide a query.")
 

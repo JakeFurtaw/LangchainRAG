@@ -9,8 +9,6 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 from transformers import LlamaForCausalLM, LlamaTokenizer
 from textwrap import wrap
 import torch
-import torch.nn as nn
-from torch.nn.parallel import DistributedDataParallel as DDP
 import os
 import sys
 from dotenv import load_dotenv
@@ -23,10 +21,10 @@ load_dotenv(Path(".env"))
 HUGGING_FACE_HUB_TOKEN = os.getenv("HUGGING_FACE_HUB_TOKEN")
 # Load the LLama2 model and tokenizer
 tokenizer = LlamaTokenizer.from_pretrained("meta-llama/Llama-2-13b-chat-hf", 
-    load_in_8bit=True,#Trying to implement quantization
+    load_in_8bit=True,
     device_map="auto")
 model = LlamaForCausalLM.from_pretrained("meta-llama/Llama-2-13b-chat-hf", 
-    load_in_8bit=True,#Trying to implement quantization
+    load_in_8bit=True,
     device_map="auto")
 # Move the model and tokenizer to the primary device
 model,tokenizer.to(device)
@@ -65,7 +63,7 @@ def print_results(results):
         wrapped_lines = []
         for line in lines:
             wrapped_lines.extend(wrap(line, width=80))
-        # Print the wrapped lines with a blank line between each result
+        # Print the wrapped lines with a blank lines between each result
         print('\n\n'.join(wrapped_lines))
         print(f"Relevance Score: {score:.4f}")
         print('-' * 80)

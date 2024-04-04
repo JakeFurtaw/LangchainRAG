@@ -59,7 +59,7 @@ def main():
         # Get the query
         query = ' '.join(sys.argv[1:])
         # Query the db for the most similar results
-        results = db.similarity_search_with_relevance_scores(query, k=3)
+        results = db.similarity_search_with_relevance_scores(query, k=5)
         # Get the chat prompt template
         prompt_template = ChatPromptTemplate.from_template(LLAMA_CHAT_TEMPLATE)
         context_str = '\n'.join([f"{result[0]}\nRelevance Score: {result[1]:.4f}" for result in results])

@@ -1,3 +1,5 @@
 chroma/
 data/
 .env
+models/
+.idea/

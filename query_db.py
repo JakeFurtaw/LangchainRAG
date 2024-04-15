@@ -14,11 +14,17 @@ import sys
 from dotenv import load_dotenv
 from pathlib import Path
 
+# Path to the Chroma database
+CHROMA_PATH = 'TowsonDB'
+EMBEDDING_MODEL = "BAAI/bge-large-en-v1.5"
+
+
 # Specify the GPU as device if available
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 # Load your Hugging Face API token
 load_dotenv(Path(".env"))
 HUGGING_FACE_HUB_TOKEN = os.getenv("HUGGING_FACE_HUB_TOKEN")
+
 # Load the LLama2 model and tokenizer
 tokenizer = LlamaTokenizer.from_pretrained("meta-llama/Llama-2-70b-chat-hf", 
     load_in_8bit=True,
@@ -26,8 +32,7 @@ tokenizer = LlamaTokenizer.from_pretrained("meta-llama/Llama-2-70b-chat-hf",
 model = LlamaForCausalLM.from_pretrained("meta-llama/Llama-2-70b-chat-hf", 
     load_in_8bit=True,
     device_map="auto")
-# Path to the Chroma database
-CHROMA_PATH = 'TowsonDB'
+
 # Chat template to get better results from LLama2 model
 LLAMA_CHAT_TEMPLATE = (
     "<s>[INST] <<SYS>>"
@@ -69,8 +74,8 @@ def print_results(results):
 # Main Function
 def main():
     # Load the database and the embedding function
-    embedding_function = HuggingFaceEmbeddings()
-    db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
+    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
+    db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embeddings)
     # Query the database
     if len(sys.argv) > 1:
         # Get the query

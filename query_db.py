@@ -15,19 +15,19 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 # Specify the GPU as device if available
-device = [torch.device(f"cuda") if torch.cuda.is_available() else torch.device("cpu")]
+device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 # Load your Hugging Face API token
 load_dotenv(Path(".env"))
 HUGGING_FACE_HUB_TOKEN = os.getenv("HUGGING_FACE_HUB_TOKEN")
 # Load the LLama2 model and tokenizer
-tokenizer = LlamaTokenizer.from_pretrained("meta-llama/Llama-2-13b-chat-hf", 
+tokenizer = LlamaTokenizer.from_pretrained("meta-llama/Llama-2-70b-chat-hf", 
     load_in_8bit=True,
     device_map="auto")
-model = LlamaForCausalLM.from_pretrained("meta-llama/Llama-2-13b-chat-hf", 
+model = LlamaForCausalLM.from_pretrained("meta-llama/Llama-2-70b-chat-hf", 
     load_in_8bit=True,
     device_map="auto")
 # Move the model and tokenizer to the primary device
-model,tokenizer.to(device)
+# model.to(device)
 # Path to the Chroma database
 CHROMA_PATH = 'chroma'
 # Chat template to get better results from LLama2 model
@@ -64,7 +64,7 @@ def print_results(results):
         for line in lines:
             wrapped_lines.extend(wrap(line, width=80))
         # Print the wrapped lines with a blank lines between each result
-        print('\n\n'.join(wrapped_lines))
+        print('\n'.join(wrapped_lines))
         print(f"Relevance Score: {score:.4f}")
         print('-' * 80)
 
@@ -85,11 +85,11 @@ def main():
             document, score = result
             docs.append(document.page_content.strip())
         # Create the chat prompt
-        prompt = LLAMA_CHAT_TEMPLATE.format(context_str=', \n\n'.join(docs), query_str='\n\n'+query)
+        prompt = LLAMA_CHAT_TEMPLATE.format(context_str=', \n'.join(docs), query_str='\n\n'+query)
         # Move the input tensors to the device
         input_tensors = tokenizer(prompt, return_tensors="pt").to(device)
         # Generate the response from the LLama2 model
-        response = model.module.generate(**input_tensors)
+        response = model.generate(**input_tensors)
         response_text = tokenizer.decode(response[0], skip_special_tokens=True)
         # Print the results and query
         print('-' * 80)

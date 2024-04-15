@@ -13,8 +13,8 @@ import re
 import torch
 
 SITEMAP_URL = 'https://www.towson.edu/sitemap.xml'
-CHROMA_PATH = 'chroma'
-EMBEDDING_MODEL = "intfloat/e5-large-v2"
+CHROMA_PATH = 'TowsonDB'
+EMBEDDING_MODEL = "BAAI/bge-large-en-v1.5"
 
 # Set device to cuda if available
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -53,7 +53,6 @@ def save_to_db(chunks):
         shutil.rmtree(CHROMA_PATH)
     
     embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
-    embeddings.embedding_model.to(device)
 
     # Create a new database from the current documents
     db = Chroma.from_documents(

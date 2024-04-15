@@ -13,7 +13,7 @@ import torch
 
 DATA_PATH = 'data'
 CHROMA_PATH = 'chroma'
-EMBEDDING_MODEL = "intfloat/e5-large-v2"
+EMBEDDING_MODEL = "BAAI/bge-large-en-v1.5"
 
 #Set device to cuda if available
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

@@ -26,10 +26,8 @@ tokenizer = LlamaTokenizer.from_pretrained("meta-llama/Llama-2-70b-chat-hf",
 model = LlamaForCausalLM.from_pretrained("meta-llama/Llama-2-70b-chat-hf", 
     load_in_8bit=True,
     device_map="auto")
-# Move the model and tokenizer to the primary device
-# model.to(device)
 # Path to the Chroma database
-CHROMA_PATH = 'chroma'
+CHROMA_PATH = 'TowsonDB'
 # Chat template to get better results from LLama2 model
 LLAMA_CHAT_TEMPLATE = (
     "<s>[INST] <<SYS>>"

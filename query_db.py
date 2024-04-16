@@ -1,12 +1,12 @@
-""" This script is used to query the database of text chunks created in create_db.py. 
-It uses the langchain library to load the model and tokenizer. 
-Then the script queries the database and returns the result or results depending on the k #. 
-MAKE SURE TO REIGNORE THE .env FILE AFTER USE """
+"""
+This script is used to query the database of text chunks created in create_db.py.
+It uses the langchain library to load the model and tokenizer.
+Then the script queries the database and returns the result or results depending on the k #.
+MAKE SURE TO REIGNORE THE .env FILE AFTER USE
+"""
 from langchain.vectorstores.chroma import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from transformers import LlamaForCausalLM, LlamaTokenizer
-from langchain.prompts import ChatPromptTemplate
-import torch
 from textwrap import wrap
 import torch
 import os
@@ -44,18 +44,26 @@ LLAMA_CHAT_TEMPLATE = (
     "<</SYS>>"
     "[/INST] {context_str} </s><s>[INST] {query_str} [/INST]"
 )
+
 # Printing Results to the CLI
 def print_results(results):
     if not results:
         print("Sorry, I couldn't find any relevant information for your query.")
         return
-
-    for i, result in enumerate(results, start=1):
-        content = result[0]
+    print("\nResults:")
+    print('-' * 80)
+    for result in results:
+        if isinstance(result[0], str):
+            content = result[0].strip()
+        else:
+            content = result[0].page_content.strip()
         score = result[1]
-        lines = [line.strip() for line in content.strip().split('\n') if line.strip()]
-        print(f"Result {i}:")
-        print("Content:")
+        # Split the content into lines
+        lines = content.split('\n')
+        # Remove empty lines and leading/trailing whitespace
+        lines = [line.strip() for line in lines if line.strip()]
+        # Wrap long lines
+        wrapped_lines = []
         for line in lines:
             wrapped_lines.extend(wrap(line, width=80))
         # Print the wrapped lines with a blank lines between each result
@@ -88,8 +96,8 @@ def main():
         response_text = tokenizer.decode(response[0], skip_special_tokens=True)
         # Print the results and query
         print('-' * 80)
-        print(f"\n\nQuery: {query}")
-        print_results([(f"\n\n"+response_text, 1.0)])
+        print(f"Query: {query}")
+        print_results([(f"\n"+response_text, 1.0)])
     else:
         print("Please provide a query.")
 

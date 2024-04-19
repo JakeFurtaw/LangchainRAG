@@ -38,10 +38,10 @@ def load_docs():
         cleaned_text = re.sub(r'\n+', '\n', cleaned_text).strip()
         #Removing footer, header, and other irrelevant/repetative content
         soup = BeautifulSoup(cleaned_text, 'html.parser')
-        removeHeadFootDrop = (soup.find('div', class_='utility'), 
-                              soup.find('div', class_='main'), 
-                              soup.find('div', class_='links'), 
-                              soup.find('div', class_='secondary'))
+        removeHeadFootDrop = (soup.find_all('div', class_='utility'), 
+                              soup.find_all('div', class_='main'), 
+                              soup.find_all('div', class_='links'), 
+                              soup.find_all('div', class_='secondary'))
         for div in removeHeadFootDrop:
             if div:
                 removeHeadFootDrop.extract()

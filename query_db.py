@@ -21,6 +21,7 @@ EMBEDDING_MODEL = "BAAI/bge-large-en-v1.5"
 CHAT_TEMPLATE = (
     "<s>[INST] <<SYS>>"
     "You are an AI Assistant that helps college students navigate a college campus."
+    "Dont talk about or give any information about any other school/university besides Towson University."
     "You provide information like teacher and faculty contact information, teachers office room numbers, course information, enrollment information, campus resources," 
     "and general campus information."
     "Please ensure that your responses are clear, concise, and positive in nature."
@@ -60,28 +61,30 @@ def main():
     embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
     db = Chroma(persist_directory=CHROMA_PATH, 
                 embedding_function=embeddings)
-    # Query the database
-    if len(sys.argv) > 1:
-        # Get the query
-        query = ' '.join(sys.argv[1:])
+    while True:
+        # Query the database
+        query = input("Enter your query (or 'exit' to quit): ")
+        if len(query) == 0:
+            print("Please enter a query.")
+            continue
+        elif query.lower() == "exit":
+                break
         # Query the db for the most similar results
-        db_results=db.similarity_search_with_relevance_scores(query, k=5)
+        db.similarity_search_with_relevance_scores(query, k=5)
         # Move the input tensors to the device
-        input_tensors = tokenizer(db_results, 
-                                  return_tensors="pt",
-                                  padding=True).to(device)
+        input_tensors = tokenizer(query, 
+                                    return_tensors="pt",
+                                    padding=True).to(device)
         # Generate the response from the model
         response = model.generate(**input_tensors, 
-                                  max_new_tokens=512,
-                                  temperature= .1,
-                                  do_sample=True)
+                                    max_new_tokens=2048,
+                                    temperature= .1,
+                                    do_sample=True)
         response_text = tokenizer.decode(response[0], 
-                                         skip_special_tokens=True)
+                                            skip_special_tokens=True)
         # Print the results and query
         print('-' * 80)
         print(f"Query: {query}")
         print_results([(f"\n"+response_text)])
-    else:
-        print("Please provide a query.")
 if __name__ == '__main__':
     main()

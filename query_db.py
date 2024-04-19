@@ -63,7 +63,7 @@ def main():
                 embedding_function=embeddings)
     while True:
         # Query the database
-        query = input("Enter your query (or 'exit' to quit): ")
+        query = input("Enter query(or 'exit' to quit): ")
         if len(query) == 0:
             print("Please enter a query.")
             continue

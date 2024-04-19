@@ -86,8 +86,10 @@ def main():
         for result in results:
             document, score = result
             docs.append(document.page_content.strip())
+        # Create the chat prompt
+        prompt = CHAT_TEMPLATE.format(context_str=', \n'.join(docs), query_str='\n\n'+query)
         # Move the input tensors to the device
-        input_tensors = tokenizer(query,
+        input_tensors = tokenizer(prompt,
                                   return_tensors="pt",
                                   padding=True).to(device)
         # Generate the response from the model

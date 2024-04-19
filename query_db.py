@@ -34,7 +34,8 @@ device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cp
 load_dotenv(Path(".env"))
 HUGGING_FACE_HUB_TOKEN = os.getenv("HUGGING_FACE_HUB_TOKEN")
 #Configure the quantization config
-quantization_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=torch.float16)
+quantization_config = BitsAndBytesConfig(load_in_4bit=True,
+                                          bnb_4bit_compute_dtype=torch.float16)
 # Load the Model and Tokenizer
 tokenizer = AutoTokenizer.from_pretrained("alpindale/WizardLM-2-8x22B", 
     quantization_config=quantization_config,
@@ -64,9 +65,9 @@ def main():
         # Get the query
         query = ' '.join(sys.argv[1:])
         # Query the db for the most similar results
-        db.similarity_search_with_relevance_scores(query, k=5)
+        db_results=db.similarity_search_with_relevance_scores(query, k=5)
         # Move the input tensors to the device
-        input_tensors = tokenizer(query, 
+        input_tensors = tokenizer(db_results, 
                                   return_tensors="pt",
                                   padding=True).to(device)
         # Generate the response from the model

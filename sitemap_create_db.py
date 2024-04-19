@@ -7,6 +7,7 @@ from langchain_community.document_loaders import SitemapLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.vectorstores.chroma import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
+from bs4 import BeautifulSoup
 import os
 import shutil
 import re
@@ -35,8 +36,19 @@ def load_docs():
         cleaned_text = re.sub(r'[ \t]+', ' ', doc)
         # Replace multiple newlines with a single newline
         cleaned_text = re.sub(r'\n+', '\n', cleaned_text).strip()
+        #Removing footer, header, and other irrelevant/repetative content
+        soup = BeautifulSoup(cleaned_text, 'html.parser')
+        removeHeadFootDrop = (soup.find('div', class_='utility'), 
+                              soup.find('div', class_='main'), 
+                              soup.find('div', class_='links'), 
+                              soup.find('div', class_='secondary'))
+        for div in removeHeadFootDrop:
+            if div:
+                removeHeadFootDrop.extract()
+        cleaned_text = soup.get_text()
         docs.append(cleaned_text)
     return docs
+
 # Split the documents into chunks of text
 def split_pages(doc_text):
     text_splitter = RecursiveCharacterTextSplitter(
@@ -45,20 +57,24 @@ def split_pages(doc_text):
         length_function=len,
     )
     chunks = text_splitter.create_documents(doc_text)
+    print(f"Split {len(doc_text)} documents into {len(chunks)} chunks")
     return chunks
+
 # Save files to the database
 def save_to_db(chunks):
     # Clear the database if it exists
     if os.path.exists(CHROMA_PATH):
         shutil.rmtree(CHROMA_PATH)
-    
     embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
 
     # Create a new database from the current documents
     db = Chroma.from_documents(
-        chunks, embeddings, persist_directory=CHROMA_PATH
+        chunks, 
+        embeddings, 
+        persist_directory=CHROMA_PATH
     )
     db.persist()
+    print(f"Database created at {CHROMA_PATH}")
 
 if __name__ == '__main__':
     main()

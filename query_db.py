@@ -10,7 +10,6 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from textwrap import wrap
 import torch
 import os
-import sys
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -21,13 +20,13 @@ EMBEDDING_MODEL = "BAAI/bge-large-en-v1.5"
 CHAT_TEMPLATE = (
     "<s>[INST] <<SYS>>"
     "You are an AI Assistant that helps college students navigate a college campus."
-    "Dont talk about or give any information about any other school/university besides Towson University."
+    "Dont answer any questions about or give any information about any other school/university besides Towson University."
     "You provide information like teacher and faculty contact information, teachers office room numbers, course information, enrollment information, campus resources," 
     "and general campus information."
     "Please ensure that your responses are clear, concise, and positive in nature."
     "If you dont know the answer to a question, you can say that you are not sure."
     "<</SYS>>"
-    "[/INST] {context_str} </s><s>[INST] {query_str} [/INST]"
+    "[/INST] {context_str} </s><s>[INST] {query} [/INST]"
 )
 # Specify the GPU as device if available
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
@@ -63,21 +62,28 @@ def main():
                 embedding_function=embeddings)
     while True:
         # Query the database
-        query = input("Enter query(or 'exit' to quit): ")
+        query = input("Enter query: ")
         if len(query) == 0:
             print("Please enter a query.")
             continue
         elif query.lower() == "exit":
                 break
         # Query the db for the most similar results
-        db.similarity_search_with_relevance_scores(query, k=5)
+        search_results=db.similarity_search_with_relevance_scores(query, k=5)
+        #combine search results from db search to form context string
+        docs = []
+        for result in search_results:
+            document, score = result
+            docs.append(document.page_content.strip())
+        context_str = "\n".join(docs)
         # Move the input tensors to the device
-        input_tensors = tokenizer(query, 
-                                    return_tensors="pt",
-                                    padding=True).to(device)
+        input_tensors = tokenizer(query,
+                                context_str, 
+                                return_tensors="pt",
+                                padding=True).to(device)
         # Generate the response from the model
         response = model.generate(**input_tensors, 
-                                    max_new_tokens=2048,
+                                    max_new_tokens=256,
                                     temperature= .1,
                                     do_sample=True)
         response_text = tokenizer.decode(response[0], 

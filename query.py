@@ -1,9 +1,3 @@
-"""
-This script is used to query the database of text chunks created in create_db.py.
-It uses the langchain library to load the model and tokenizer.
-Then the script queries the database and returns the result or results depending on the k #.
-MAKE SURE TO REIGNORE THE .env FILE AFTER USE
-"""
 from langchain.vectorstores.chroma import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
@@ -28,15 +22,13 @@ CHAT_TEMPLATE = (
     "<</SYS>>"
     "[/INST] {context_str} </s><s>[INST] {query} [/INST]"
 )
-# Specify the GPU as device if available
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-# Load your Hugging Face API token
 load_dotenv(Path(".env"))
 HUGGING_FACE_HUB_TOKEN = os.getenv("HUGGING_FACE_HUB_TOKEN")
-#Configure the quantization config
+
 quantization_config = BitsAndBytesConfig(load_in_4bit=True,
                                           bnb_4bit_compute_dtype=torch.float16)
-# Load the Model and Tokenizer
+
 tokenizer = AutoTokenizer.from_pretrained("alpindale/WizardLM-2-8x22B", 
     quantization_config=quantization_config,
     chat_template=CHAT_TEMPLATE,
@@ -56,42 +48,36 @@ def print_results(results):
     print('-' * 80)
 # Main Function
 def main():
-    # Load the database and the embedding function
     embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
-    db = Chroma(persist_directory=CHROMA_PATH, 
-                embedding_function=embeddings)
+    db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embeddings)
+
     while True:
-        # Query the database
         query = input("Enter query: ")
         if len(query) == 0:
             print("Please enter a query.")
             continue
         elif query.lower() == "exit":
-                break
-        # Query the db for the most similar results
-        search_results=db.similarity_search_with_relevance_scores(query, k=3)
-        #combine search results from db search to form context string
+            break
+
+        search_results = db.similarity_search_with_relevance_scores(query, k=3)
         docs = []
+        documents = []
         for result in search_results:
             document, score = result
             docs.append(document.page_content.strip())
-        context_str = "\n".join(docs)
-        # Move the input tensors to the device
-        input_tensors = tokenizer(query,
-                                return_tensors="pt",
-                                padding=True).to(device)
-        # Generate the response from the model
-        response = model.generate(**input_tensors, 
-                                    max_new_tokens=512,
-                                    temperature= .1,
-                                    do_sample=True)
-        response_text = tokenizer.decode(response[0], 
-                                            skip_special_tokens=True)
-        # Print the results and query
-        print('-' * 80)
-        print(f"Context:\n {search_results}")    
+            print(f"Database Results:\n {document.page_content.strip()}")
+            print(f"Relevance score: {score}")
+            print("-" * 80)
+            documents.append(document.page_content.strip())
+
+        context_str = query + "\n\n".join(documents)
+        input_tensors = tokenizer(context_str, return_tensors="pt", padding=True).to(device)
+        response = model.generate(**input_tensors, max_new_tokens=512, temperature=0.3, do_sample=True)
+        response_text = tokenizer.decode(response[0], skip_special_tokens=True)
+
         print('-' * 80)
         print(f"Query: {query}")
         print_results([(f"\n"+response_text)])
+
 if __name__ == '__main__':
     main()

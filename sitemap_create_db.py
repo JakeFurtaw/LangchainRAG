@@ -19,15 +19,17 @@ def main():
     save_to_db(chunks)
     
 def load_docs():
+    print("Loading documents from " + SITEMAP_URL)
     loader = SitemapLoader(SITEMAP_URL, continue_on_failure=True)
     documents = loader.load()
     return documents
 
 def parse_docs(documents):
+    print("Cleaning documents...")
     cleaned_docs = []
     for doc in documents:
         page_content = doc.page_content
-        cleaned_text = re.sub(r'[\t\n\r]+', ' ', page_content)
+        cleaned_text = re.sub(r'[\s\n\r\t]+', ' ', page_content)
         soup = BeautifulSoup(cleaned_text, 'html.parser')
         for div in soup.select('div#skip-to-main, div.row, div.utility, div.main, div.mobile, div.links, div.secondary, div.bottom'):
             div.decompose()
@@ -36,6 +38,7 @@ def parse_docs(documents):
     return cleaned_docs
 
 def split_pages(cleaned_docs):
+    print("Splitting documents into chunks...")
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=1000,
         chunk_overlap=150,
@@ -53,7 +56,7 @@ def save_to_db(chunks):
                  model_name=EMBEDDING_MODEL, 
                  model_kwargs={"device": device}
     )
-    print("Creating Chroma database")
+    print("Creating Chroma database....")
     db = Chroma.from_documents(
         chunks, 
         embeddings, 

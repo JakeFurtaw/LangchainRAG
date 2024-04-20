@@ -19,12 +19,17 @@ def main():
     save_to_db(chunks)
     
 def load_docs():
+    error_count = 0
+    def handle_error(error):
+        nonlocal error_count
+        error_count += 1
     print("Loading documents from " + SITEMAP_URL)
-    loader = SitemapLoader(SITEMAP_URL, continue_on_failure=True)
+    loader = SitemapLoader(SITEMAP_URL, continue_on_failure=True, error_handler=handle_error)
     documents = loader.load()
-    return documents
+    print("Number of documents loaded: " + str(len(documents-error_count)))
+    return documents, error_count
 
-def parse_docs(documents):
+def parse_docs(documents, error_count):
     print("Cleaning documents...")
     cleaned_docs = []
     for doc in documents:
@@ -35,16 +40,18 @@ def parse_docs(documents):
             div.decompose()
         cleaned_text = soup.get_text(strip=True, separator=" ")
         cleaned_docs.append(cleaned_text)
+    print("Number of documents cleaned: " + str(len(cleaned_docs-error_count)))
     return cleaned_docs
 
 def split_pages(cleaned_docs):
     print("Splitting documents into chunks...")
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=1000,
-        chunk_overlap=150,
-        length_function=len,
+        chunk_overlap=200,
+        length_function=len
     )
     chunks = text_splitter.create_documents(cleaned_docs)
+    print("Number of chunks created: " + str(len(chunks)))
     return chunks
 
 def save_to_db(chunks):

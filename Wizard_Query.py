@@ -89,8 +89,9 @@ def main():
                                             skip_special_tokens=True)
         # Print the results and query
         print('-' * 80)
+        print(f"Context:\n {search_results}")    
+        print('-' * 80)
         print(f"Query: {query}")
         print_results([(f"\n"+response_text)])
-        print(f"Relevance Score:{score}")
 if __name__ == '__main__':
     main()

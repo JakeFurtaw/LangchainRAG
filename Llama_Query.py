@@ -75,6 +75,7 @@ def main():
             document, score = result
             docs.append(document.page_content.strip())
         context_str = "\n".join(docs)
+        print(context_str)
         # Move the input tensors to the device
         input_tensors = tokenizer(query,
                                 return_tensors="pt").to(device)

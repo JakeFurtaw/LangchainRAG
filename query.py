@@ -63,8 +63,12 @@ def get_relevant_documents(query, db):
 
 def generate_response(query, context_str):
     input_text = CHAT_TEMPLATE.format(context_str=context_str, query=query)
+    
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+    
     input_tensors = tokenizer(input_text, return_tensors="pt", padding=True).to(device)
-    response = model.generate(**input_tensors, max_new_tokens=512, top_k=50, num_beams=5, repetition_penalty=1.2, temperature=0.3, do_sample=True)
+    response = model.generate(**input_tensors, max_new_tokens=256, repetition_penalty=1.2, temperature=0.3, do_sample=True)
     response_text = tokenizer.decode(response[0], skip_special_tokens=True)
     return response_text
 

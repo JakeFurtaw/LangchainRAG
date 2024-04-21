@@ -8,7 +8,7 @@ from pathlib import Path
 
 CHROMA_PATH = 'TowsonDB'
 EMBEDDING_MODEL = "BAAI/bge-large-en-v1.5"
-MODEL_ID = "mistralai/Mixtral-8x22B-v0.1"
+MODEL_ID = "mistralai/Mixtral-8x22B-Instruct-v0.1"
 CHAT_TEMPLATE = (
     "<s>[INST] <<SYS>>"
     "You are an AI Assistant that helps college students navigate Towson University campus. "
@@ -29,7 +29,7 @@ CHAT_TEMPLATE = (
     "Response: For information about on-campus housing at Towson University, you can visit the Residence Life website at https://www.towson.edu/housing. This website provides details about the different residence halls, housing options, and the application process."
     "<<Example 2>>"
 
-    "[/INST] {context_str} </s><s>[INST] {query} [/INST]"
+    "[/INST]"
 )    
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -40,14 +40,14 @@ quantization_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dty
 tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, quantization_config=quantization_config, device_map="auto")
 model = AutoModelForCausalLM.from_pretrained(MODEL_ID, quantization_config=quantization_config, device_map="auto")
 
-def print_results(results):
-    if not results:
+def print_results(query, response_text):
+    if not response_text:
         print("Sorry, I couldn't find any relevant information for your query.")
         return
-    print("\nResults:")
+    print("\nResponse:")
     print('-' * 80)
-    response_text = results[0]
-    print("\n" + response_text)
+    print(f"Query: {query}")
+    print(response_text)
     print('-' * 80)
 
 def get_relevant_documents(query, db):
@@ -68,8 +68,12 @@ def generate_response(query, context_str):
         tokenizer.pad_token = tokenizer.eos_token
     
     input_tensors = tokenizer(input_text, return_tensors="pt", padding=True).to(device)
-    response = model.generate(**input_tensors, max_new_tokens=256, repetition_penalty=1.2, temperature=0.3, do_sample=True)
+    response = model.generate(**input_tensors, max_new_tokens=256, repetition_penalty=1.2, temperature=0.1, do_sample=True)
     response_text = tokenizer.decode(response[0], skip_special_tokens=True)
+
+    #Manually removing template from response
+    start_index = response_text.find("[/INST]") + len("[/INST]")
+    response_text = response_text[start_index:].strip()
     return response_text
 
 def main():
@@ -87,10 +91,7 @@ def main():
         docs = get_relevant_documents(query, db)
         context_str = "\n\n".join(docs)
         response_text = generate_response(query, context_str)
-
-        print('-' * 80)
-        print(f"Query: {query}")
-        print_results([(f"\n" + response_text)])
+        print_results(query, response_text)
 
 if __name__ == '__main__':
     main()

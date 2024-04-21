@@ -19,28 +19,24 @@ def main():
     save_to_db(chunks)
     
 def load_docs():
-    error_count = 0
-    def handle_error(error):
-        nonlocal error_count
-        error_count += 1
     print("Loading documents from " + SITEMAP_URL)
-    loader = SitemapLoader(SITEMAP_URL, continue_on_failure=True, error_handler=handle_error)
+    loader = SitemapLoader(SITEMAP_URL, continue_on_failure=True)
     documents = loader.load()
-    print("Number of documents loaded: " + str(len(documents-error_count)))
-    return documents, error_count
+    print("Number of documents loaded: " + str(len(documents)))
+    return documents
 
-def parse_docs(documents, error_count):
+def parse_docs(documents):
     print("Cleaning documents...")
     cleaned_docs = []
     for doc in documents:
         page_content = doc.page_content
         cleaned_text = re.sub(r'[\s\n\r\t]+', ' ', page_content)
         soup = BeautifulSoup(cleaned_text, 'html.parser')
-        for div in soup.select('div#skip-to-main, div.row, div.utility, div.main, div.mobile, div.links, div.secondary, div.bottom'):
+        for div in soup.select('div#skip-to-main, div.row, div.utility, div.main, div.mobile, div.links, div.secondary, div.bottom, div.sidebar, nav.subnavigation'):
             div.decompose()
         cleaned_text = soup.get_text(strip=True, separator=" ")
         cleaned_docs.append(cleaned_text)
-    print("Number of documents cleaned: " + str(len(cleaned_docs-error_count)))
+    print("Number of documents cleaned: " + str(len(cleaned_docs)))
     return cleaned_docs
 
 def split_pages(cleaned_docs):

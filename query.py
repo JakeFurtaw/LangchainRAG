@@ -70,7 +70,7 @@ def generate_response(query, context_str):
     response_text = tokenizer.decode(response[0], skip_special_tokens=True)
 
     #Manually removing template from response
-    start_index = response_text.find("[/INST]") + len("[/INST]")
+    start_index = response_text.find("[INST]") + len("[/INST]")
     response_text = response_text[start_index:].strip()
     return response_text
 

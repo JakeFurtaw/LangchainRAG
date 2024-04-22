@@ -32,7 +32,7 @@ def parse_docs(documents):
         page_content = doc.page_content
         cleaned_text = re.sub(r'[\s\n\r\t]+', ' ', page_content)
         soup = BeautifulSoup(cleaned_text, 'html.parser')
-        for div in soup.select('div#skip-to-main, div.row, div.utility, div.main, div.mobile, div.links, div.secondary, div.bottom, div.sidebar, nav.subnavigation'):
+        for div in soup.select('div#skip-to-main, div.row, div.utility, div.main, div.mobile, div.links, div.secondary, div.bottom, div.sidebar, nav.subnavigation, div#subnavigation, div.subnavigation, div.sidebar'):
             div.decompose()
         cleaned_text = soup.get_text(strip=True, separator=" ")
         cleaned_docs.append(cleaned_text)
@@ -43,7 +43,7 @@ def split_pages(cleaned_docs):
     print("Splitting documents into chunks...")
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=1000,
-        chunk_overlap=200,
+        chunk_overlap=250,
         length_function=len
     )
     chunks = text_splitter.create_documents(cleaned_docs)

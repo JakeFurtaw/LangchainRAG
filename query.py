@@ -28,14 +28,12 @@ CHAT_TEMPLATE = (
     "<<Example 2>>"
     "<</SYS>>"
     "<s>[INST] Context: {conversation_history}{context_str} Question: {query} Response: <[/INST]><RESPONSE>"
-
 )    
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 load_dotenv(Path(".env"))
 HUGGING_FACE_HUB_TOKEN = os.getenv("HUGGING_FACE_HUB_TOKEN")
 quantization_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=torch.float16)
-
 tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, quantization_config=quantization_config, device_map="auto")
 model = AutoModelForCausalLM.from_pretrained(MODEL_ID, quantization_config=quantization_config, device_map="auto")
 
@@ -57,9 +55,9 @@ def get_relevant_documents(query, db):
     for result in search_results:
         document, score = result
         docs.append(document.page_content.strip())
-        # print(f"Database Results:\n {document.page_content.strip()}")
-        # print(f"Relevance score: {score}")
-        # print("-" * 80)
+        print(f"Database Results:\n {document.page_content.strip()}")
+        print(f"Relevance score: {score}")
+        print("-" * 80)
     return docs
 
 def generate_response(query, context_str):
@@ -68,7 +66,7 @@ def generate_response(query, context_str):
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
     input_tensors = tokenizer(input_text, return_tensors="pt", padding=True).to(device)
-    response = model.generate(**input_tensors, max_new_tokens=256, repetition_penalty=1.2, temperature=0.1, do_sample=True)
+    response = model.generate(**input_tensors, max_new_tokens=256, repetition_penalty=1.2, top_p = .95, temperature=0.1, do_sample=True)
     response_text = tokenizer.decode(response[0], skip_special_tokens=True)
     response_text = response_text.split('<RESPONSE>')[1]
     return response_text

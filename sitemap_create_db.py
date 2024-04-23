@@ -34,6 +34,8 @@ def parse_docs(documents):
         soup = BeautifulSoup(cleaned_text, 'html.parser')
         for div in soup.select('div#skip-to-main, div.row, div.utility, div.main, div.mobile, div.links, div.secondary, div.bottom, div.sidebar, nav.subnavigation, div#subnavigation, div.subnavigation, div.sidebar'):
             div.decompose()
+        for noscript_tag in soup.find_all('noscript'):
+            noscript_tag.decompose()
         cleaned_text = soup.get_text(strip=True, separator=" ")
         cleaned_docs.append(cleaned_text)
     print("Number of documents cleaned: " + str(len(cleaned_docs)))

@@ -26,7 +26,7 @@ CHAT_TEMPLATE = (
     "Response: For information about on-campus housing at Towson University, you can visit the Residence Life website at https://www.towson.edu/housing. This website provides details about the different residence halls, housing options, and the application process."
     "<<Example 2>>"
     "<</SYS>>"
-    "<s>[INST] Context:{context_str} Question: {query} Response: <[/INST]><RESPONSE>"
+    "<s>[INST] Context:{context_str} Question: {query} Response: <[/INST]>"
 
 )    
 
@@ -66,7 +66,7 @@ def generate_response(query, context_str):
     input_tensors = tokenizer(input_text, return_tensors="pt", padding=True).to(device)
     response = model.generate(**input_tensors, max_new_tokens=256, repetition_penalty=1.2, temperature=0.3, do_sample=True)
     response_text = tokenizer.decode(response[0], skip_special_tokens=True)
-    response_text = response_text.split('<RESPONSE>')[1]
+    response_text = response_text.split('</INST>')[1]
     return response_text
 
 def main():

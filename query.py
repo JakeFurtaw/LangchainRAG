@@ -54,9 +54,9 @@ def get_relevant_documents(query, db):
     for result in search_results:
         document, score = result
         docs.append(document.page_content.strip())
-        # print(f"Database Results:\n {document.page_content.strip()}")
-        # print(f"Relevance score: {score}")
-        # print("-" * 80)
+        print(f"Database Results:\n {document.page_content.strip()}")
+        print(f"Relevance score: {score}")
+        print("-" * 80)
     return docs
 
 def generate_response(query, context_str):

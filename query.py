@@ -8,7 +8,7 @@ from pathlib import Path
 
 CHROMA_PATH = 'TowsonDB'
 EMBEDDING_MODEL = "BAAI/bge-large-en-v1.5"
-MODEL_ID = "mistralai/Mixtral-8x22B-Instruct-v0.1"
+MODEL_ID = "meta-llama/Meta-Llama-3-70B"
 CONVERSATION_HISTORY = []
 CHAT_TEMPLATE = (
     "<s>[INST] <<SYS>>"

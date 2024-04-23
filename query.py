@@ -9,7 +9,6 @@ from pathlib import Path
 CHROMA_PATH = 'TowsonDB'
 EMBEDDING_MODEL = "BAAI/bge-large-en-v1.5"
 MODEL_ID = "meta-llama/Meta-Llama-3-70B-Instruct"
-CONVERSATION_HISTORY = []
 CHAT_TEMPLATE = (
     "<s>[INST] <<SYS>>"
     "You are an AI Assistant that helps college students navigate Towson University campus. "
@@ -27,14 +26,14 @@ CHAT_TEMPLATE = (
     "Response: For information about on-campus housing at Towson University, you can visit the Residence Life website at https://www.towson.edu/housing. This website provides details about the different residence halls, housing options, and the application process."
     "<<Example 2>>"
     "<</SYS>>"
-    "<s>[INST] Context: {conversation_history}{context_str} Question: {query} Response: <[/INST]><RESPONSE>"
+    "<s>[INST] Context:{context_str} Question: {query} Response: <[/INST]><RESPONSE>"
 
 )    
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 load_dotenv(Path(".env"))
 HUGGING_FACE_HUB_TOKEN = os.getenv("HUGGING_FACE_HUB_TOKEN")
-quantization_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=torch.float16)
+quantization_config = BitsAndBytesConfig(load_in_8bit=True, bnb_8bit_compute_dtype=torch.float16)
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, quantization_config=quantization_config, device_map="auto")
 model = AutoModelForCausalLM.from_pretrained(MODEL_ID, quantization_config=quantization_config, device_map="auto")
@@ -43,8 +42,6 @@ def print_results(query, response_text):
     if not response_text:
         print("Sorry, I couldn't find any relevant information for your query.")
         return
-    CONVERSATION_HISTORY.append(f"Query: {query}")
-    CONVERSATION_HISTORY.append(f"Response: {response_text}")
     print(f"Query: {query}")
     print("\nResponse:")
     print('-' * 80)
@@ -63,12 +60,11 @@ def get_relevant_documents(query, db):
     return docs
 
 def generate_response(query, context_str):
-    conversation_history = "\n".join(CONVERSATION_HISTORY)
-    input_text = CHAT_TEMPLATE.format(conversation_history = conversation_history, context_str=context_str, query=query)
+    input_text = CHAT_TEMPLATE.format( context_str=context_str, query=query)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
     input_tensors = tokenizer(input_text, return_tensors="pt", padding=True).to(device)
-    response = model.generate(**input_tensors, max_new_tokens=256, repetition_penalty=1.2, temperature=0.1, do_sample=True)
+    response = model.generate(**input_tensors, max_new_tokens=256, repetition_penalty=1.2, temperature=0.3, do_sample=True)
     response_text = tokenizer.decode(response[0], skip_special_tokens=True)
     response_text = response_text.split('<RESPONSE>')[1]
     return response_text

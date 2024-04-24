@@ -21,14 +21,14 @@ CHAT_TEMPLATE = (
     If you do not have enough information to provide a Response to the Question from the Context, politely state that you are unable to provide a satisfactory answer."""
     "<<Example 1>>"
     "Query: What is the email address for Professor John Smith in the Computer Science department?"
-    "Response: According to the information provided, the email address for Professor John Smith in the Computer Science department at Towson University is john.smith@towson.edu."
+    "Response: According to the information provided, the email address for Professor John Smith in the Computer Science department at Towson University is john.smith@towson.edu. His Office Location is SH123 and his Phone Number is 410-555-1234."
     "<<Example 1>>"
     "<<Example 2>>"
     "Query: Where can I find information about on-campus housing?"
     "Response: For information about on-campus housing at Towson University, you can visit the Residence Life website at https://www.towson.edu/housing. This website provides details about the different residence halls, housing options, and the application process."
     "<<Example 2>>"
     "<<Example 3>>"
-    "Query: What building is the library located on campus?"
+    "Query: What building is the library located in on campus?"
     "Response: The library at Towson University is located in the Albert S. Cook Library building on campus. The library provides a wide range of resources and services to support students' academic success."
     "<<Example 3>>"
     "<</SYS>>"
@@ -58,9 +58,9 @@ def get_relevant_documents(query, db):
     for result in search_results:
         document, score = result
         docs.append(document.page_content.strip())
-        print(f"Database Results:\n {document.page_content.strip()}")
-        print(f"Relevance score: {score}")
-        print("-" * 80)
+        # print(f"Database Results:\n {document.page_content.strip()}")
+        # print(f"Relevance score: {score}")
+        # print("-" * 80)
     return docs
 
 def generate_response(query, context_str):

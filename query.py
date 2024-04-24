@@ -33,7 +33,6 @@ CHAT_TEMPLATE = (
     "<<Example 3>>"
     "<</SYS>>"
     "<s>[INST] Context:{context_str} Question: {query} Response: <[/INST]><RESPONSE>"
-
 ) 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

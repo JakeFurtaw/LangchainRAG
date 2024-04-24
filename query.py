@@ -24,7 +24,7 @@ CHAT_TEMPLATE = (
     "Response: According to the information provided, the email address for Professor John Smith in the Computer Science department at Towson University is john.smith@towson.edu. His Office Location is SH123 and his Phone Number is 410-555-1234."
     "<<Example 1>>"
     "<<Example 2>>"
-    "Query: Where can I find information about on-campus housing?"
+    "Query: Where can I find information about on-campus and off campus housing?"
     "Response: For information about on-campus housing at Towson University, you can visit the Residence Life website at https://www.towson.edu/housing. This website provides details about the different residence halls, housing options, and the application process."
     "<<Example 2>>"
     "<<Example 3>>"

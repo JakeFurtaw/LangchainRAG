@@ -20,8 +20,8 @@ CHAT_TEMPLATE = (
     Use a positive and respectful tone suitable for college students. 
     If you do not have enough information to provide a Response to the Question from the Context, politely state that you are unable to provide a satisfactory answer."""
     "<<Example 1>>"
-    "Query: What is the email address for Professor John Smith in the Computer Science department?"
-    "Response: According to the information provided, the email address for Professor John Smith in the Computer Science department at Towson University is john.smith@towson.edu. His Office Location is SH123 and his Phone Number is 410-555-1234."
+    "Query: What is the email address for Professor John Smith?"
+    "Response: According to the information provided, the email address for Professor John Smith in the Computer Science department at Towson University is john.smith@towson.edu, is Office Location is SH123, and his Phone Number is 410-555-1234."
     "<<Example 1>>"
     "<<Example 2>>"
     "Query: Where can I find information about on-campus and off campus housing?"

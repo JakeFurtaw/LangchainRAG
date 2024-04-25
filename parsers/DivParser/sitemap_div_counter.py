@@ -1,47 +1,30 @@
 from bs4 import BeautifulSoup
-from collections import Counter
 from langchain_community.document_loaders.sitemap import SitemapLoader
 
-def find_repeating_div_names(sitemap_url, output_file):
-    loader = SitemapLoader(sitemap_url, continue_on_failure=True)
-    docs = loader.load()
+SITEMAP = "https://www.towson.edu/sitemap.xml"
 
-    all_divs = []
+loader = SitemapLoader(SITEMAP, continue_on_failure=True)
+documents = loader.load()
 
-    for doc in docs:
-        html_content = doc.page_content
-        soup = BeautifulSoup(html_content, "html.parser")
-        divs = soup.find_all("div")
-        all_divs.extend(divs)
+div_info = []
 
-    print("Number of div elements found:", len(all_divs))
-
-    div_attributes = []
-    for div in all_divs:
-        class_names = div.get('class', [])
-        id_name = div.get('id', '')
-        div_attributes.append({
-            'class': class_names,
-            'id': id_name
+for document in documents:
+    soup = BeautifulSoup(document.page_content, 'html.parser')
+    divs = soup.find_all('div')
+    for div in divs:
+        div_class = div.get('class', [])
+        div_id = div.get('id', [])
+        div_info.append({
+            'class': div_class,
+            'id': div_id
         })
 
-    print("Number of unique div classes found:", len(set(attr['class'] for attr in div_attributes)))
-    print("Number of unique div IDs found:", len(set(attr['id'] for attr in div_attributes if attr['id'])))
+# Save div_info to a text file
+with open('div_info.txt', 'w', encoding='utf-8') as file:
+    for div in div_info:
+        class_names = ', '.join(div['class'])
+        div_id = div['id'][0] if div['id'] else ''
+        file.write(f"Class: {class_names}, ID: {div_id}\n")
 
-    class_counter = Counter(cls for attr in div_attributes for cls in attr['class'])
-    id_counter = Counter(attr['id'] for attr in div_attributes if attr['id'])
 
-    with open(output_file, "w") as file:
-        file.write("Repeating class names:\n")
-        for class_name, count in class_counter.most_common():
-            if count > 5:
-                file.write(f"{class_name}: {count}\n")
-        
-        file.write("\nRepeating IDs:\n")
-        for div_id, count in id_counter.most_common():
-            if count > 5:
-                file.write(f"{div_id}: {count}\n")
 
-sitemap_url = "https://www.towson.edu/sitemap.xml"
-output_file = "div_stats.txt"
-find_repeating_div_names(sitemap_url, output_file)

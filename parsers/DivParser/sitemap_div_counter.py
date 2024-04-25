@@ -16,9 +16,9 @@ for document in documents:
     divs = soup.find_all('div')
     for div in divs:
         if div.get('class'):
-            div_classes.extend(div['class'])
+            div_classes.extend(div('class'))
         if div.get('id'):
-            div_ids.append(div['id'])
+            div_ids.append(div('id'))
 
 class_counts = Counter(div_classes)
 id_counts = Counter(div_ids)

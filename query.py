@@ -19,7 +19,6 @@ CHAT_TEMPLATE = (
     Respond with clear, concise, and focused answers directly addressing the Question. 
     Use a positive and respectful tone suitable for college students. 
     If you do not have enough information to provide a Response to the Question from the Context, politely state that you are unable to provide a satisfactory answer.
-
     <<Example 1>>
     Question: What is the email address for Professor John Smith?
     Response: According to the information provided, the email address for Professor John Smith in the Computer Science department at Towson University is john.smith@towson.edu, is Office Location is SH123, and his Phone Number is 410-555-1234.
@@ -68,7 +67,7 @@ def generate_response(query, context_str):
     input_text = (context_str, query)
     input_text = CHAT_TEMPLATE.format(context_str=context_str, query=query)
     input_tensors = tokenizer.encode(input_text, return_tensors="pt").to(device)
-    response = model.generate(input_tensors, max_new_tokens=1500, repetition_penalty=1.2, temperature=0.3, do_sample=True)
+    response = model.generate(input_tensors, max_new_tokens=1536, repetition_penalty=1.2, temperature=0.3, do_sample=True)
     response_text = tokenizer.decode(response[0], skip_special_tokens=True)
     response_text = response_text.split("</RESPONSE>")[-1].strip()
     return response_text

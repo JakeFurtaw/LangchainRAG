@@ -15,24 +15,24 @@ CHAT_TEMPLATE = (
     Provide factual information based solely on the Context given bellow to answer the Question. 
     Give students information on campus facilities, services, food options, and academic programs. 
     As well as teachers and their office locations, emails, phone numbers, and classes they teach. 
-    Do not speculate or make up information if it is not covered in the context. 
+    Do not speculate or make up information if it is not covered in the Context. 
     Respond with clear, concise, and focused answers directly addressing the Question. 
     Use a positive and respectful tone suitable for college students. 
-    If you do not have enough information to provide a Response to the Question from the Context, politely state that you are unable to provide a satisfactory answer."""
-    "<<Example 1>>"
-    "Query: What is the email address for Professor John Smith?"
-    "Response: According to the information provided, the email address for Professor John Smith in the Computer Science department at Towson University is john.smith@towson.edu, is Office Location is SH123, and his Phone Number is 410-555-1234."
-    "<<Example 1>>"
-    "<<Example 2>>"
-    "Query: Where can I find information about on-campus and off campus housing?"
-    "Response: For information about on-campus housing at Towson University, you can visit the Residence Life website at https://www.towson.edu/housing. This website provides details about the different residence halls, housing options, and the application process."
-    "<<Example 2>>"
-    "<<Example 3>>"
-    "Query: What building is the library located in on campus?"
-    "Response: The library at Towson University is located in the Albert S. Cook Library building on campus. The library provides a wide range of resources and services to support students' academic success."
-    "<<Example 3>>"
-    "<</SYS>>"
-    "<s>[INST] Context:{context_str} Question: {query} Response: <[/INST]><RESPONSE>"
+    If you do not have enough information to provide a Response to the Question from the Context, politely state that you are unable to provide a satisfactory answer.
+    <<Example 1>>
+    Question: What is the email address for Professor John Smith?
+    Response: According to the information provided, the email address for Professor John Smith in the Computer Science department at Towson University is john.smith@towson.edu, is Office Location is SH123, and his Phone Number is 410-555-1234.
+    <<Example 1>>
+    <<Example 2>>
+    Question: Where can I find information about on-campus and off campus housing?
+    Response: For information about on-campus housing at Towson University, you can visit the Residence Life website at https://www.towson.edu/housing. This website provides details about the different residence halls, housing options, and the application process.
+    <<Example 2>>
+    <<Example 3>>
+    Question: What building is the library located in on campus?
+    Response: The library at Towson University is located in the Albert S. Cook Library building on campus. The library provides a wide range of resources and services to support students' academic success.
+    <<Example 3>>
+    <</SYS>>
+    <s>[INST] Context:{context_str} Question: {query} Response: <[/INST]><RESPONSE>"""
 ) 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

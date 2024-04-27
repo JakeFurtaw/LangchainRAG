@@ -6,7 +6,6 @@ div_classes = []
 div_ids = []
 directory = Path('/home/jake/Programming/LangchainRAG-Chatbot/parsers/HTMLtoText')
 
-
 for file_path in directory.glob('*.html'):
     with file_path.open('r', encoding='utf-8') as f:
         content = f.read()
@@ -17,7 +16,6 @@ for file_path in directory.glob('*.html'):
             div_classes.extend(div.get('class'))
         if div.get('id'):
             div_ids.append(div.get('id'))
-
 
 class_counts = Counter(div_classes)
 id_counts = Counter(div_ids)

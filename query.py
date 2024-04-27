@@ -10,8 +10,8 @@ CHROMA_PATH = 'TowsonDB'
 EMBEDDING_MODEL = "BAAI/bge-large-en-v1.5"
 MODEL_ID = "meta-llama/Meta-Llama-3-70B-Instruct"
 CHAT_TEMPLATE = (
-    "<s>[INST] <<SYS>>"
-    """You are an AI Assistant that helps college students navigate Towson University campus. 
+    """<s>[INST] <<SYS>>
+    You are an AI Assistant that helps college students navigate Towson University campus. 
     Provide factual information based solely on the Context given bellow to answer the Question. 
     Give students information on campus facilities, services, food options, and academic programs. 
     As well as teachers and their office locations, emails, phone numbers, and classes they teach. 
@@ -19,6 +19,7 @@ CHAT_TEMPLATE = (
     Respond with clear, concise, and focused answers directly addressing the Question. 
     Use a positive and respectful tone suitable for college students. 
     If you do not have enough information to provide a Response to the Question from the Context, politely state that you are unable to provide a satisfactory answer.
+
     <<Example 1>>
     Question: What is the email address for Professor John Smith?
     Response: According to the information provided, the email address for Professor John Smith in the Computer Science department at Towson University is john.smith@towson.edu, is Office Location is SH123, and his Phone Number is 410-555-1234.
@@ -32,7 +33,7 @@ CHAT_TEMPLATE = (
     Response: The library at Towson University is located in the Albert S. Cook Library building on campus. The library provides a wide range of resources and services to support students' academic success.
     <<Example 3>>
     <</SYS>>
-    <s>[INST] Context:{context_str} Question: {query} Response: <[/INST]><RESPONSE>"""
+    <s>[INST] Context:{context_str} Question: {query} Response: <[/INST]></RESPONSE>"""
 ) 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -53,7 +54,7 @@ def print_results(query, response_text):
     print('-' * 80)
 
 def get_relevant_documents(query, db):
-    search_results = db.similarity_search_with_relevance_scores(query, k=3)
+    search_results = db.similarity_search_with_relevance_scores(query, k=5)
     docs = []
     for result in search_results:
         document, score = result
@@ -67,9 +68,9 @@ def generate_response(query, context_str):
     input_text = (context_str, query)
     input_text = CHAT_TEMPLATE.format(context_str=context_str, query=query)
     input_tensors = tokenizer.encode(input_text, return_tensors="pt").to(device)
-    response = model.generate(input_tensors, max_new_tokens=512, repetition_penalty=1.2, temperature=0.3, do_sample=True)
+    response = model.generate(input_tensors, max_new_tokens=1500, repetition_penalty=1.2, temperature=0.3, do_sample=True)
     response_text = tokenizer.decode(response[0], skip_special_tokens=True)
-    response_text = response_text.split("<RESPONSE>")[-1].strip()
+    response_text = response_text.split("</RESPONSE>")[-1].strip()
     return response_text
 
 def main():

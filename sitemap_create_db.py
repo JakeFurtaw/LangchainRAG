@@ -29,8 +29,8 @@ def parse_docs(documents):
     print("Cleaning documents...")
     cleaned_docs = []
     for doc in documents:
-        page_content = doc.page_content
-        cleaned_text = re.sub(r'[\s\n\r\t]+', ' ', page_content)
+        content = doc.page_content
+        cleaned_text = re.sub(r'[\s\n\r\t]+', ' ', content)
         soup = BeautifulSoup(cleaned_text, 'html.parser')
         for div in soup.select('div#skip-to-main, div.row, div.utility, div.main, div.mobile, div.links, div.secondary, div.bottom, div.sidebar, nav.subnavigation, div#subnavigation, div.subnavigation, div.sidebar'):
             div.decompose()
